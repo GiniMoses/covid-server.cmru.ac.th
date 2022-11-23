@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Personal {
+  id               Int             @id @default(autoincrement())
+  citizenId        String          @unique
+  studentCode      String
+  prefix           String
+  name             String
+  surname          String
+  institute        Institute
+  statusPersonal   StatusPersonal? @relation(fields: [statusPersonalId], references: [id])
+  dateAdd          DateTime?
+  createdAt        DateTime        @default(now())
+  statusPersonalId Int?
+}
+
+enum ResultStatus {
+  NORESULT
+  NOTPASSED
+  PASSED
+}
+
+model CovidTest {
+  id                  Int            @id @default(autoincrement())
+  citizenId           String
+  fullName            String
+  queqeId             Int
+  checkedAt           DateTime       @default(now())
+  testedAt            DateTime
+  testStatus          ResultStatus   @default(NORESULT)
+  checkedOutAt        DateTime
+  doubleCheckedAt     DateTime?
+  doubleCheckedStatus ResultStatus?
+  statusPersonal      StatusPersonal @relation(fields: [statusPersonalId], references: [id])
+  institue            Institute
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  statusPersonalId    Int
+}
+
+model StatusPersonal {
+  id        Int         @id @default(autoincrement())
+  name      String
+  CovidTest CovidTest[]
+  Personal  Personal[]
+}
+
+enum Institute {
+  CHIANGMAI
+  CHIANGRAI
+  LAMPANG
+  UDTARADIT
+  PETCHABOON
+  KAMPEANGPHET
+  PIBOONSONGKRAM
+  NAKORNSAWAN
+}
